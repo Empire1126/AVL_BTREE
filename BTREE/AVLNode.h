@@ -6,8 +6,9 @@ class AVLNode
 public:
 	AVLNode();
 	~AVLNode();
-	char Payload[32];
+	char Payload[50]={'\0'};
 	int count = 0;
+	unsigned int id = 0;
 	int balanceFactor = 0;
 	int lChild = 0;
 	int rChild = 0;
