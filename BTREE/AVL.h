@@ -1,7 +1,5 @@
 #pragma once
 #include "AVLNode.h"
-#include <fstream>
-
 class AVL
 {
 public:

@@ -5,7 +5,7 @@
 
 AVL::AVL()
 {
-	treeLocation = "AVLTREEDATA";
+	treeLocation = "AVL_TREE_DATA.AVLTree";
 	std::fstream stream;
 	stream.open(treeLocation, std::fstream::out);
 	AVLNode nil;
