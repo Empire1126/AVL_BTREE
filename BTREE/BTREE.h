@@ -35,7 +35,10 @@ public:
 	double writeCount = 0;
 	int height = 0;
 	double totalNodes = 0;
+	double totalWords = 0;
 	void reportHeight();
+	void reportTotalNumberOfNodesAndWords();
+	void reportLoadingFactor();
 private:
 	int root = 0;
 	int nextNodeId = 0;
@@ -47,7 +50,9 @@ private:
 	void insertNonFull(BTreeNode nonFullNode, std::string toAdd);
 	BTreeSearchResult searchImpl(BTreeNode selector, std::string toFind);
 	void listImpl(BTreeNode currentNode);
-	void reportHeightImpl();
+	void reportHeightImpl(BTreeNode currentNode, int currentHeight);
+	void reportTotalNumberOfNodesAndWordsImpl(BTreeNode currentNode);
+	void reportLoadingFactorImpl();
 };
 
 

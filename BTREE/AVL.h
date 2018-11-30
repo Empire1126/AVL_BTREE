@@ -13,7 +13,9 @@ public:
 	double writeCount = 0;
 	int height = 0;
 	double totalNodes = 0;
+	double totalWords = 0;
 	void reportHeight();
+	void reportTotalNumberOfNodesAndWords();
 private:
 	std::string treeLocation;
 	unsigned int nextNodeId = 0;
@@ -23,6 +25,7 @@ private:
 	void listImpl(AVLNode currentNode);
 	AVLNode readNode(int nodeID);
 	void saveNode(AVLNode toSave, int nodeID);
-	void reportHeightImpl();
+	void reportHeightImpl(AVLNode currentNode,int currentHeight);
+	void reportTotalNumberOfNodesAndWordsImpl(AVLNode currentNode);
 };
 

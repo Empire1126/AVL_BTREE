@@ -336,6 +336,60 @@ void AVL::listImpl(AVLNode currentNode)
 	
 }
 
+void AVL::reportHeight()
+{
+	if(root!= 0)
+	{
+		reportHeightImpl(readNode(root), 1);
+	}
+	std::cout << "AVL Tree height : " << height << std::endl;
+}
+
+void AVL::reportHeightImpl(AVLNode currentNode, int currentHeight)
+{
+	if(currentHeight > height)
+	{
+		height = currentHeight;
+	}
+	if(currentNode.lChild != 0)
+	{
+		reportHeightImpl(readNode(currentNode.lChild), height + 1);
+	}
+	if(currentNode.rChild != 0)
+	{
+		reportHeightImpl(readNode(currentNode.rChild), height + 1);
+	}
+}
+
+void AVL::reportTotalNumberOfNodesAndWords()
+{
+	if(root != 0)
+	{
+		reportTotalNumberOfNodesAndWordsImpl(readNode(root));
+	}	
+	std::cout << "total nodes (unique words): " <<totalNodes << std::endl;
+	std::cout << "total items (unique and duplicates): " << totalWords << std::endl;
+}
+
+void AVL::reportTotalNumberOfNodesAndWordsImpl(AVLNode currentNode)
+{
+	totalWords = totalWords + currentNode.count;
+	if(currentNode.lChild != 0)
+	{
+		totalNodes++;
+		reportTotalNumberOfNodesAndWordsImpl(readNode(currentNode.lChild));
+	}
+	if(currentNode.rChild != 0)
+	{
+		totalNodes++;
+		reportTotalNumberOfNodesAndWordsImpl(readNode(currentNode.rChild));
+	}
+}
+
+
+
+
+
 
 
 

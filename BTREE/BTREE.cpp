@@ -235,6 +235,57 @@ void BTREE::listImpl(BTreeNode currentNode)
 
 }
 
+void BTREE::reportHeight()
+{
+	if(root!=0)
+	{
+		reportHeightImpl(readNode(root), 1);
+	}
+	std::cout << "Tree Height: "<<height<<std::endl;
+}
+
+void BTREE::reportHeightImpl(BTreeNode currentNode, int currentHeight)
+{
+	if(currentHeight > height)
+	{
+		height = currentHeight;
+	}
+	for(int i = 0; i<=currentNode.numberOfKeys;i++)
+	{
+		if(currentNode.children[i]!=0)
+		{
+			reportHeightImpl(readNode(currentNode.children[i]), currentHeight + 1);
+		}
+	}
+}
+
+
+void BTREE::reportTotalNumberOfNodesAndWords()
+{
+	if(root!=0)
+	{
+		reportTotalNumberOfNodesAndWordsImpl(readNode(root));
+	}
+	std::cout << "total nodes (unique words): "<< totalNodes<<std::endl;
+	std::cout << "total items (unique and duplicates): " << totalWords << std::endl;
+}
+
+void BTREE::reportTotalNumberOfNodesAndWordsImpl(BTreeNode currentNode)
+{
+	for(int i =0;i<currentNode.numberOfKeys;i++)
+	{
+		totalWords = totalWords + currentNode.keys[i].count;
+	}
+	for(int i =0;i<=currentNode.numberOfKeys;i++)
+	{
+		if(currentNode.children[i]!=0)
+		{
+			totalNodes++;
+			reportTotalNumberOfNodesAndWordsImpl(readNode(currentNode.children[i]));
+		}
+	}
+}
+
 
 
 
