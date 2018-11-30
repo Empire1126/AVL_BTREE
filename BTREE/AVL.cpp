@@ -7,7 +7,7 @@ AVL::AVL()
 {
 	treeLocation = "AVL_TREE_DATA.AVLTree";
 	std::fstream stream;
-	stream.open(treeLocation, std::fstream::out);
+	stream.open(treeLocation, std::fstream::out | std::fstream::binary);
 	AVLNode nil;
 	stream.write(reinterpret_cast<const char*>(&nil), sizeof(AVLNode));
 	stream.close();
@@ -16,7 +16,7 @@ AVL::AVL()
 AVL::AVL(std::string treeFileLocation)
 {
 	std::fstream stream;
-	stream.open(treeFileLocation,std::fstream::out);
+	stream.open(treeFileLocation,std::fstream::out | std::fstream::binary);
 	AVLNode nil;
 	stream.write(reinterpret_cast<const char*>(&nil), sizeof(AVLNode));
 	stream.close();
@@ -76,6 +76,7 @@ void AVL::insertImpl(std::string toAdd)
 		AVLNode newNode;
 		strcpy_s(newNode.Payload, toAdd.c_str());
 		newNode.lChild = newNode.rChild = 0;
+		newNode.count=1;
 		newNode.balanceFactor = 0;
 		newNode.id = ++nextNodeId;
 		root = nextNodeId;
@@ -118,18 +119,20 @@ void AVL::insertImpl(std::string toAdd)
 	currentNode.balanceFactor = 0;
 	currentNode.id = ++nextNodeId;
 	currentNode.count = 1;
+	saveNode(currentNode, currentNode.id);
 	unsigned int newNodeId = currentNode.id;
 	AVLNode currentParent = readNode(currentParentId);
 	if (strcmp(toAdd.c_str(), currentParent.Payload) < 0)
 	{
 		currentParent.lChild = currentNode.id;
-		saveNode(currentParent, currentParent.id);
+		
 	}
 	else
 	{
-		currentNode.rChild = currentNode.id;
-		saveNode(currentParent, currentParent.id);
+		currentParent.rChild = currentNode.id;
+		
 	}
+	saveNode(currentParent, currentParent.id);
 	currentParent = readNode(LastImbalanceId);
 	if (strcmp(toAdd.c_str(), currentParent.Payload) > 0)
 	{
@@ -142,7 +145,7 @@ void AVL::insertImpl(std::string toAdd)
 		displacement = 1;
 	}
 	currentNode = readNode(lastImbalanceChildId);
-	while (currentNode.id != newNodeId);
+	while (currentNode.id != newNodeId)
 	{
 		if (strcmp(toAdd.c_str(), currentNode.Payload) > 0)
 		{
@@ -187,10 +190,10 @@ void AVL::insertImpl(std::string toAdd)
 		{
 			currentParent = readNode(LastImbalanceId);
 			c = readNode(currentNode.rChild);
-			c.lChild = currentNode.id;
-			c.rChild = currentParent.id;
 			currentNode.rChild = c.lChild;
 			currentParent.lChild = c.rChild;
+			c.lChild = currentNode.id;
+			c.rChild = currentParent.id;			
 			saveNode(currentNode, currentNode.id);
 			saveNode(currentParent, currentParent.id);
 			saveNode(c, c.id);
@@ -203,14 +206,14 @@ void AVL::insertImpl(std::string toAdd)
 				saveNode(currentParent, currentParent.id);
 				break;
 			case 1:
-				currentNode.balanceFactor = 0;
-				currentParent.balanceFactor = 1;
+				currentNode.balanceFactor = -1;
+				currentParent.balanceFactor = 0;
 				saveNode(currentNode, currentNode.id);
 				saveNode(currentParent, currentParent.id);
 				break;
 			case -1:
-				currentNode.balanceFactor = 1;
-				currentParent.balanceFactor = 0;
+				currentNode.balanceFactor = 0;
+				currentParent.balanceFactor = 1;
 				saveNode(currentNode, currentNode.id);
 				saveNode(currentParent, currentParent.id);
 				break;
@@ -222,7 +225,7 @@ void AVL::insertImpl(std::string toAdd)
 	}
 	else
 	{
-		if (currentNode.balanceFactor = -1)
+		if (currentNode.balanceFactor == -1)
 		{
 			currentParent = readNode(LastImbalanceId);
 			currentParent.rChild = currentNode.lChild;
@@ -235,10 +238,10 @@ void AVL::insertImpl(std::string toAdd)
 		{
 			currentParent = readNode(LastImbalanceId);
 			c = readNode(currentNode.lChild);
-			c.lChild = currentParent.id;
-			c.rChild = currentNode.id;
 			currentNode.lChild = c.rChild;
 			currentParent.rChild = c.lChild;
+			c.lChild = currentParent.id;
+			c.rChild = currentNode.id;			
 			saveNode(currentNode, currentNode.id);
 			saveNode(currentParent, currentParent.id);
 			saveNode(c, c.id);
@@ -250,14 +253,14 @@ void AVL::insertImpl(std::string toAdd)
 				saveNode(currentParent, currentParent.id);
 				break;
 			case  1:
-				currentNode.balanceFactor = 1;
-				currentParent.balanceFactor = 0;
+				currentNode.balanceFactor = 0;
+				currentParent.balanceFactor = -1;
 				saveNode(currentNode, currentNode.id);
 				saveNode(currentParent, currentParent.id);
 				break;
 			case -1:
-				currentParent.balanceFactor = 1;
-				currentNode.balanceFactor = 0;
+				currentParent.balanceFactor = 0;
+				currentNode.balanceFactor = 1;
 				saveNode(currentNode, currentNode.id);
 				saveNode(currentParent, currentParent.id);
 				break;
@@ -268,7 +271,7 @@ void AVL::insertImpl(std::string toAdd)
 		}
 	}
 	c = readNode(LastImbalanceParentId);
-	if (currentParent.id == 0)
+	if (c.id == 0)
 	{
 		root = currentNode.id;
 		return;
@@ -279,7 +282,7 @@ void AVL::insertImpl(std::string toAdd)
 		saveNode(c, c.id);
 		return;
 	}
-	if (c.rChild = currentParent.id)
+	if (c.rChild == currentParent.id)
 	{
 		c.rChild = currentNode.id;
 		saveNode(c, c.id);
@@ -289,9 +292,10 @@ void AVL::insertImpl(std::string toAdd)
 
 
 AVLNode AVL::readNode(int nodeID)
-{	
+{
+	readCount++;
 	std::fstream stream;
-	stream.open(treeLocation,std::ifstream::in);
+	stream.open(treeLocation,std::ios::in|std::ios::binary);
 	stream.seekg(sizeof(AVLNode)*nodeID);
 	AVLNode toReturn;
 	stream.read(reinterpret_cast<char*>(&toReturn), sizeof(AVLNode));
@@ -301,11 +305,37 @@ AVLNode AVL::readNode(int nodeID)
 
 void AVL::saveNode(AVLNode toSave, int nodeID)
 {
+	writeCount++;
 	std::fstream stream;
-	stream.open(treeLocation, std::fstream::out);
+	stream.open(treeLocation, std::ios::out | std::ios::binary | std::ios::in);
 	stream.seekp(sizeof(AVLNode)*nodeID);
 	stream.write(reinterpret_cast<const char*>(&toSave), sizeof(toSave));
 	stream.close();
 }
+
+void AVL::list()
+{
+	AVLNode avlRoot = readNode(root);
+	listImpl(avlRoot);
+}
+
+
+void AVL::listImpl(AVLNode currentNode)
+{
+	
+	if (currentNode.lChild != 0)
+	{
+		listImpl(readNode(currentNode.lChild));
+	}
+	std::cout << currentNode.Payload << " " << currentNode.count << std::endl;
+	if (currentNode.rChild != 0)
+	{
+		listImpl(readNode(currentNode.rChild));
+	}	
+	
+	
+}
+
+
 
 
