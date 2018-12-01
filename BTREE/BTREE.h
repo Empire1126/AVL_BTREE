@@ -1,3 +1,9 @@
+/*Btree.h
+ *Luke Pinkney
+ *EECS 2510 Fall 2018
+ *11/28/2018
+ *Btree header file, contains decelerations of class functions and class variables, also contains structs of the btree Nodes
+ */
 #pragma once
 #include <string>
 #include <iostream>

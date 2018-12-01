@@ -1,3 +1,11 @@
+/*AVL.cpp
+ *Luke Pinkney
+ *EECS 2510 Fall 2018
+ *11/28/2018
+ *avl tree source code file, contains definitions of functions
+ */
+
+
 #include "pch.h"
 #include "AVL.h"
 
@@ -5,18 +13,21 @@
 
 AVL::AVL()
 {
-	treeLocation = "AVL_TREE_DATA.AVLTree";
-	std::fstream stream;
+	//default constructor of the avl tree
+	treeLocation = "AVL_TREE_DATA.AVLTree"; //default avl tree file name
+	std::fstream stream; 
 	stream.open(treeLocation, std::fstream::out | std::fstream::binary);
-	AVLNode nil;
-	stream.write(reinterpret_cast<const char*>(&nil), sizeof(AVLNode));
+	AVLNode nil; // this is the node of id =0 and functions as null for the tree
+	stream.write(reinterpret_cast<const char*>(&nil), sizeof(AVLNode)); //write the "null" node to the tree,
 	stream.close();
 }
 
 AVL::AVL(std::string treeFileLocation)
 {
+	//parameter : treeFileLocation - user defined tree file name instead of default 
+	//same as default constructor except that the user has now specified the name of the tree's file
 	std::fstream stream;
-	stream.open(treeFileLocation,std::fstream::out | std::fstream::binary);
+	stream.open(treeFileLocation,std::fstream::out | std::fstream::binary); //use the parameter as the tree's file name instead of the default
 	AVLNode nil;
 	stream.write(reinterpret_cast<const char*>(&nil), sizeof(AVLNode));
 	stream.close();
@@ -30,66 +41,74 @@ AVL::~AVL()
 
 void AVL::search(std::string toFind)
 {
-	AVLNode result = searchImpl(toFind);
-	if(result.id==0)
+	//parameter : toFind - the string to find in the avl tree
+	//search function of avl tree
+	AVLNode result = searchImpl(toFind); //call the search implementation to find the string in the tree 
+	if(result.id==0)//if the result was "null" aka the node of id=0
 	{
-		std::cout << "" << std::endl;
+		std::cout << "" << std::endl; //the word is not in the tree
 	}
 	else
 	{
-		std::cout << result.Payload << " " << result.count << std::endl;
+		std::cout << result.Payload << " " << result.count << std::endl; //otherwise print out the word and the number of times it is in the tree
 	}
 }
 
 AVLNode AVL::searchImpl(std::string toFind)
 {
-	AVLNode currentNode = readNode(root);
-	while (currentNode.id!=0)
+	//parameter : toFind - the string to compare against when searching
+	//avl search implementation
+	AVLNode currentNode = readNode(root);//start searching the tree at the root, get the root node into memory
+	while (currentNode.id!=0)//as long as we haven't fallen off the tree into the "null" node
 	{
-		if(strcmp(toFind.c_str(),currentNode.Payload)==0)
+		if(strcmp(toFind.c_str(),currentNode.Payload)==0)//is the node contents equal to the string "toFind"?
 		{
-			return currentNode;
+			return currentNode;//if so we found the word we are looking for, return the current node we are at
 		}
-		else  if(strcmp(toFind.c_str(),currentNode.Payload)<0)
+		else  if(strcmp(toFind.c_str(),currentNode.Payload)<0)//otherwise is "toFind" less than or greater than the current node
 		{
-			currentNode = readNode(currentNode.lChild);
+			currentNode = readNode(currentNode.lChild);//if less then traverse left
 		}
 		else
 		{
-			currentNode = readNode(currentNode.rChild);
+			currentNode = readNode(currentNode.rChild);//otherwise traverse right
 		}
 	}
-	AVLNode nil;
+	AVLNode nil;//if we fall off the the tree return a node with id =0, this is essentially equal to returning the "null" node
 	return  nil;
 }
 
 
 void AVL::insert(std::string toAdd)
 {
+	//parameters: toAdd - the node to attempt to add to the tree 
+	//wrapper to call private insertImpl
 	insertImpl(toAdd);
 }
 
 void AVL::insertImpl(std::string toAdd)
 {
-	if (root == 0)
+	//parameters: toAdd - the node to compare against when attempting to add
+	if (root == 0)//if the tree is empty
 	{
-		AVLNode newNode;
+		AVLNode newNode;//create a new root
+		//add the data of the word inserted to the root and set child pointer and counts
 		strcpy_s(newNode.Payload, toAdd.c_str());
 		newNode.lChild = newNode.rChild = 0;
 		newNode.count=1;
 		newNode.balanceFactor = 0;
-		newNode.id = ++nextNodeId;
-		root = nextNodeId;
-		saveNode(newNode, newNode.id);
+		newNode.id = ++nextNodeId; //increment the node ID tracker variable before setting this new nodes id to it.
+		root = newNode.id; //set the root to the new roots id
+		saveNode(newNode, newNode.id); //save the new node
 		return;
 	}
-	int displacement = 0;
-	unsigned int LastImbalanceId = root;
-	unsigned int LastImbalanceParentId = 0;
-	unsigned int currentParentId = 0;
-	unsigned int lastImbalanceChildId = 0;
-	AVLNode currentNode = readNode(root);
-	while (currentNode.id != 0)
+	int displacement = 0; //displacement to keep track of how a new node will imbalance an existing tree 
+	unsigned int LastImbalanceId = root; //this variable will keep track of the last place an acceptable imbalance was seen
+	unsigned int LastImbalanceParentId = 0; //this variable will keep track of the parent of the last acceptable imbalance seen
+	unsigned int currentParentId = 0; // keeps track of the lagger node, or parent of the current node we are at while searching
+	unsigned int lastImbalanceChildId = 0; //id of the child node to the last acceptable imbalance
+	AVLNode currentNode = readNode(root);//start searching at the root of the tree
+	while (currentNode.id != 0)//while we haven't fallen off the tree into the "null" node.
 	{
 		if (strcmp(currentNode.Payload, toAdd.c_str()) == 0)
 		{
@@ -353,11 +372,11 @@ void AVL::reportHeightImpl(AVLNode currentNode, int currentHeight)
 	}
 	if(currentNode.lChild != 0)
 	{
-		reportHeightImpl(readNode(currentNode.lChild), height + 1);
+		reportHeightImpl(readNode(currentNode.lChild), currentHeight + 1);
 	}
 	if(currentNode.rChild != 0)
 	{
-		reportHeightImpl(readNode(currentNode.rChild), height + 1);
+		reportHeightImpl(readNode(currentNode.rChild), currentHeight + 1);
 	}
 }
 

@@ -1,3 +1,9 @@
+/*BTREE.cpp
+ *Luke Pinkney
+ *EECS 2510 Fall 2018
+ *11/28/2018
+ *Btree source file, contains function definitions of the btree data structure
+ */
 #include "pch.h"
 #include "BTREE.h"
 
@@ -241,7 +247,7 @@ void BTREE::reportHeight()
 	{
 		reportHeightImpl(readNode(root), 1);
 	}
-	std::cout << "Tree Height: "<<height<<std::endl;
+	std::cout << "Btree Tree Height: "<<height<<std::endl;
 }
 
 void BTREE::reportHeightImpl(BTreeNode currentNode, int currentHeight)

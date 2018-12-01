@@ -1,3 +1,9 @@
+/*AVLNode.h
+ *Luke Pinkney
+ *EECS 2510 Fall 2018
+ *11/28/2018
+ *AVL tree node header file, contains decelerations of functions and more importantly decelerations of class variables
+ */
 #pragma once
 #include <string>
 #include <iostream>
