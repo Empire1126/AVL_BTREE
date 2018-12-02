@@ -24,6 +24,7 @@ public:
 	double totalWords = 0; //total unique words + duplicate words in the tree
 	void reportHeight(); //public wrapper to calculate height
 	void reportTotalNumberOfNodesAndWords(); //public wrapper to calculate total unique words and duplicates
+	void tellFileSize();
 private:
 	std::string treeLocation; //this is the name of the file that contains the avl tree data
 	unsigned int nextNodeId = 0; //this is a tracker to keep each node added to the tree unique, it identifies each node
